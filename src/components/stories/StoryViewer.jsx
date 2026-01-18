@@ -152,13 +152,15 @@ export default function StoryViewer({ stories, onClose }) {
       </button>
 
       {/* Story title */}
-      <div className="absolute top-10 left-4 z-10">
-        <p className="text-white font-semibold text-sm">{currentStory.title}</p>
-      </div>
+      {currentStory.title && (
+        <div className="absolute top-10 left-4 z-10">
+          <p className="text-white font-semibold text-sm">{currentStory.title}</p>
+        </div>
+      )}
 
       {/* Slide content */}
       <div
-        className="flex-1 flex items-center justify-center"
+        className="flex-1 flex items-center justify-center p-4"
         onClick={handleTap}
       >
         {currentSlide.type === 'video' ? (
@@ -171,6 +173,30 @@ export default function StoryViewer({ stories, onClose }) {
             onEnded={() => setVideoEnded(true)}
             className="max-w-full max-h-full object-contain"
           />
+        ) : currentSlide.type === 'text' ? (
+          <div className="max-w-md w-full bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-8 shadow-2xl">
+            <p className="text-white text-xl text-center font-medium leading-relaxed whitespace-pre-wrap">
+              {currentSlide.text}
+            </p>
+          </div>
+        ) : currentSlide.type === 'link' ? (
+          <div className="max-w-md w-full bg-gradient-to-br from-green-600 to-teal-600 rounded-3xl p-8 shadow-2xl">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto">
+                <X className="w-8 h-8 text-white transform rotate-45" />
+              </div>
+              <p className="text-white text-lg font-medium">{currentSlide.link_text}</p>
+              <a
+                href={currentSlide.link_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 bg-white text-teal-600 rounded-full font-semibold text-sm"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Open Link
+              </a>
+            </div>
+          </div>
         ) : (
           <img
             src={currentSlide.url || currentSlide.image_url}

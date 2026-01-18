@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Eye, Upload, X, Calendar } from 'lucide-react';
+import { Plus, Trash2, Eye, Upload, X, Calendar, Type, Link2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function StoryManager() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -15,6 +16,9 @@ export default function StoryManager() {
     expires_at: '',
   });
   const [uploading, setUploading] = useState(false);
+  const [addSlideType, setAddSlideType] = useState(null);
+  const [textSlideInput, setTextSlideInput] = useState('');
+  const [linkSlideInputs, setLinkSlideInputs] = useState({ url: '', text: '' });
   const queryClient = useQueryClient();
 
   const { data: stories = [] } = useQuery({
@@ -71,6 +75,31 @@ export default function StoryManager() {
       ...newStory,
       slides: newStory.slides.filter((_, i) => i !== index),
     });
+  };
+
+  const addTextSlide = () => {
+    if (!textSlideInput.trim()) return;
+    setNewStory({
+      ...newStory,
+      slides: [...newStory.slides, { type: 'text', text: textSlideInput, duration: 5 }],
+    });
+    setTextSlideInput('');
+    setAddSlideType(null);
+  };
+
+  const addLinkSlide = () => {
+    if (!linkSlideInputs.url.trim()) return;
+    setNewStory({
+      ...newStory,
+      slides: [...newStory.slides, { 
+        type: 'link', 
+        link_url: linkSlideInputs.url,
+        link_text: linkSlideInputs.text || linkSlideInputs.url,
+        duration: 5 
+      }],
+    });
+    setLinkSlideInputs({ url: '', text: '' });
+    setAddSlideType(null);
   };
 
   const handleSubmit = () => {
@@ -137,11 +166,20 @@ export default function StoryManager() {
                   <div key={index} className="relative aspect-[9/16] rounded-lg overflow-hidden bg-slate-100">
                     {slide.type === 'video' ? (
                       <video src={slide.url} className="w-full h-full object-cover" />
+                    ) : slide.type === 'text' ? (
+                      <div className="w-full h-full flex items-center justify-center p-3 bg-gradient-to-br from-blue-500 to-purple-500">
+                        <p className="text-white text-xs text-center line-clamp-6">{slide.text}</p>
+                      </div>
+                    ) : slide.type === 'link' ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-3 bg-gradient-to-br from-green-500 to-teal-500">
+                        <Link2 className="w-6 h-6 text-white mb-2" />
+                        <p className="text-white text-xs text-center line-clamp-4">{slide.link_text}</p>
+                      </div>
                     ) : (
                       <img src={slide.url || slide.image_url} alt="" className="w-full h-full object-cover" />
                     )}
-                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 text-white text-[10px] rounded">
-                      {slide.type === 'video' ? 'Video' : 'Image'}
+                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 text-white text-[10px] rounded capitalize">
+                      {slide.type}
                     </div>
                     <button
                       onClick={() => removeSlide(index)}
@@ -154,27 +192,97 @@ export default function StoryManager() {
               </div>
             )}
 
-            {/* Upload Button */}
-            <label className="block">
-              <input
-                type="file"
-                accept="image/*,video/*"
-                multiple
-                onChange={(e) => handleFileUpload(e.target.files)}
-                className="hidden"
-              />
-              <div className="w-full p-4 border-2 border-dashed border-slate-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition-colors">
-                {uploading ? (
-                  <div className="text-slate-500">Uploading...</div>
-                ) : (
-                  <>
-                    <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                    <p className="text-sm text-slate-600">Add Images or Videos</p>
-                    <p className="text-xs text-slate-400 mt-1">Select multiple files at once</p>
-                  </>
-                )}
+            {/* Add Slide Options */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-slate-700">Add Slide:</p>
+              <div className="flex gap-2">
+                <label className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={(e) => handleFileUpload(e.target.files)}
+                    className="hidden"
+                  />
+                  <div className="w-full p-3 border-2 border-dashed border-slate-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition-colors">
+                    {uploading ? (
+                      <div className="text-slate-500 text-sm">Uploading...</div>
+                    ) : (
+                      <>
+                        <Upload className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+                        <p className="text-xs text-slate-600">Image/Video</p>
+                      </>
+                    )}
+                  </div>
+                </label>
+                <button
+                  onClick={() => setAddSlideType('text')}
+                  className="flex-1 p-3 border-2 border-slate-300 rounded-lg hover:border-blue-400 transition-colors"
+                >
+                  <Type className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+                  <p className="text-xs text-slate-600">Text</p>
+                </button>
+                <button
+                  onClick={() => setAddSlideType('link')}
+                  className="flex-1 p-3 border-2 border-slate-300 rounded-lg hover:border-blue-400 transition-colors"
+                >
+                  <Link2 className="w-5 h-5 text-slate-400 mx-auto mb-1" />
+                  <p className="text-xs text-slate-600">Link</p>
+                </button>
               </div>
-            </label>
+            </div>
+
+            {/* Text Slide Input */}
+            {addSlideType === 'text' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-2 border-2 border-blue-200 rounded-lg p-3"
+              >
+                <Textarea
+                  placeholder="Enter text for slide..."
+                  value={textSlideInput}
+                  onChange={(e) => setTextSlideInput(e.target.value)}
+                  className="min-h-[100px]"
+                />
+                <div className="flex gap-2">
+                  <Button onClick={addTextSlide} className="flex-1" disabled={!textSlideInput.trim()}>
+                    Add Text Slide
+                  </Button>
+                  <Button onClick={() => setAddSlideType(null)} variant="outline" className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Link Slide Input */}
+            {addSlideType === 'link' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-2 border-2 border-blue-200 rounded-lg p-3"
+              >
+                <Input
+                  placeholder="Enter URL..."
+                  value={linkSlideInputs.url}
+                  onChange={(e) => setLinkSlideInputs({ ...linkSlideInputs, url: e.target.value })}
+                />
+                <Input
+                  placeholder="Display text (optional)"
+                  value={linkSlideInputs.text}
+                  onChange={(e) => setLinkSlideInputs({ ...linkSlideInputs, text: e.target.value })}
+                />
+                <div className="flex gap-2">
+                  <Button onClick={addLinkSlide} className="flex-1" disabled={!linkSlideInputs.url.trim()}>
+                    Add Link Slide
+                  </Button>
+                  <Button onClick={() => setAddSlideType(null)} variant="outline" className="flex-1">
+                    Cancel
+                  </Button>
+                </div>
+              </motion.div>
+            )}
 
             <div className="flex gap-2">
               <Button
@@ -203,7 +311,7 @@ export default function StoryManager() {
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-slate-800">{story.title}</h3>
+                  <h3 className="font-semibold text-slate-800">{story.title || 'Untitled Story'}</h3>
                   <div className="flex items-center gap-4 mt-2 text-sm">
                     <span className="flex items-center gap-1 text-blue-600">
                       <Eye className="w-4 h-4" />
@@ -250,6 +358,14 @@ export default function StoryManager() {
                             </div>
                           </div>
                         </>
+                      ) : slide.type === 'text' ? (
+                        <div className="w-full h-full flex items-center justify-center p-1 bg-gradient-to-br from-blue-500 to-purple-500">
+                          <Type className="w-4 h-4 text-white" />
+                        </div>
+                      ) : slide.type === 'link' ? (
+                        <div className="w-full h-full flex items-center justify-center p-1 bg-gradient-to-br from-green-500 to-teal-500">
+                          <Link2 className="w-4 h-4 text-white" />
+                        </div>
                       ) : (
                         <img src={slide.url || slide.image_url} alt="" className="w-full h-full object-cover" />
                       )}
