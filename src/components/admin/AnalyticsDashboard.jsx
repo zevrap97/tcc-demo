@@ -146,22 +146,24 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Top Stories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Top Stories by Views</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={topStories}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Bar dataKey="views" fill="#3b82f6" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {topStories.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Top Stories by Views</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={topStories}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Bar dataKey="views" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Favorite Distribution */}
       <Card>
@@ -191,29 +193,31 @@ export default function AnalyticsDashboard() {
       </Card>
 
       {/* Most Favorited */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Most Favorited Items</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {topFavorited.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <span className="text-sm text-slate-700">{item.name}</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-pink-500"
-                      style={{ width: `${(item.count / maxFavoriteCount) * 100}%` }}
-                    />
+      {topFavorited.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Most Favorited Items</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {topFavorited.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700">{item.name}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-pink-500"
+                        style={{ width: `${(item.count / maxFavoriteCount) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-slate-800 w-8">{item.count}</span>
                   </div>
-                  <span className="text-sm font-medium text-slate-800 w-8">{item.count}</span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* User Growth */}
       {userGrowthData.length > 0 && (
