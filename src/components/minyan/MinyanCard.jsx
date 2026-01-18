@@ -71,15 +71,15 @@ export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAdd
               {minyan.nusach}
             </span>
           </div>
-          <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-3 mt-1.5 text-xs">
+            <span className={`flex items-center gap-1 font-medium ${getTimeColor()}`}>
               <Clock className="w-3 h-3" />
               Starts in {getTimeUntil()}
             </span>
             {distance && (
               <>
-                <span>•</span>
-                <span className="flex items-center gap-1">
+                <span className="text-slate-300">•</span>
+                <span className="flex items-center gap-1 text-slate-500">
                   <MapPin className="w-3 h-3" />
                   ~{distance} mi
                 </span>

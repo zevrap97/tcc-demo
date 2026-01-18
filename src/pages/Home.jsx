@@ -43,7 +43,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-slate-800">Chicago Jewish Community</h1>
         </motion.div>
 
-        {/* Zmanim Card */}
+        {/* Zmanim Display */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
