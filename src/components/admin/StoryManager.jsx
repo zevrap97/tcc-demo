@@ -38,21 +38,26 @@ export default function StoryManager() {
     },
   });
 
-  const handleFileUpload = async (file) => {
-    if (!file) return;
+  const handleFileUpload = async (files) => {
+    if (!files || files.length === 0) return;
     
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const isVideo = file.type.startsWith('video/');
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        const isVideo = file.type.startsWith('video/');
+        return {
+          type: isVideo ? 'video' : 'image',
+          url: file_url,
+          duration: isVideo ? 15 : 5
+        };
+      });
+
+      const uploadedSlides = await Promise.all(uploadPromises);
       
       setNewStory({
         ...newStory,
-        slides: [...newStory.slides, { 
-          type: isVideo ? 'video' : 'image',
-          url: file_url, 
-          duration: isVideo ? 15 : 5 
-        }],
+        slides: [...newStory.slides, ...uploadedSlides],
       });
     } catch (error) {
       console.error('Upload failed:', error);
@@ -69,10 +74,10 @@ export default function StoryManager() {
   };
 
   const handleSubmit = () => {
-    if (!newStory.title || newStory.slides.length === 0) return;
+    if (newStory.slides.length === 0) return;
     
     createStoryMutation.mutate({
-      title: newStory.title,
+      title: newStory.title || 'Untitled Story',
       slides: newStory.slides,
       is_active: true,
       expires_at: newStory.expires_at || null,
@@ -108,7 +113,7 @@ export default function StoryManager() {
             </div>
 
             <Input
-              placeholder="Story Title"
+              placeholder="Story Title (optional)"
               value={newStory.title}
               onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
             />
@@ -154,7 +159,8 @@ export default function StoryManager() {
               <input
                 type="file"
                 accept="image/*,video/*"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
+                multiple
+                onChange={(e) => handleFileUpload(e.target.files)}
                 className="hidden"
               />
               <div className="w-full p-4 border-2 border-dashed border-slate-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition-colors">
@@ -163,8 +169,8 @@ export default function StoryManager() {
                 ) : (
                   <>
                     <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                    <p className="text-sm text-slate-600">Add Image or Video</p>
-                    <p className="text-xs text-slate-400 mt-1">Max 30 seconds for videos</p>
+                    <p className="text-sm text-slate-600">Add Images or Videos</p>
+                    <p className="text-xs text-slate-400 mt-1">Select multiple files at once</p>
                   </>
                 )}
               </div>
@@ -173,7 +179,7 @@ export default function StoryManager() {
             <div className="flex gap-2">
               <Button
                 onClick={handleSubmit}
-                disabled={!newStory.title || newStory.slides.length === 0}
+                disabled={newStory.slides.length === 0}
                 className="flex-1 bg-blue-600"
               >
                 Create Story
