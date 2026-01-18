@@ -45,8 +45,8 @@ export default function MinyanManager() {
     updateMinyanMutation.mutate({ id: editDialog.minyan.id, data: editDialog.minyan });
   };
 
-  const groupedMinyans = minyans.reduce((acc, minyan) => {
-    const name = minyan.synagogue_name || 'Unknown';
+  const groupedMinyans = (minyans || []).reduce((acc, minyan) => {
+    const name = minyan?.synagogue_name || 'Unknown';
     if (!acc[name]) acc[name] = [];
     acc[name].push(minyan);
     return acc;
