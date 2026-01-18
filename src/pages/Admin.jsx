@@ -21,6 +21,9 @@ import { createPageUrl } from '@/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StoryManager from '@/components/admin/StoryManager';
+import BusinessManager from '@/components/admin/BusinessManager';
+import MinyanManager from '@/components/admin/MinyanManager';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 export default function Admin() {
   const [loading, setLoading] = useState(false);
