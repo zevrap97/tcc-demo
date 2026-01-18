@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import BottomNav from '@/components/navigation/BottomNav';
-import TopBar from '@/components/navigation/TopBar';
-import Sidebar from '@/components/navigation/Sidebar';
+import BottomNav from './components/navigation/BottomNav';
+import TopBar from './components/navigation/TopBar';
+import Sidebar from './components/navigation/Sidebar';
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
