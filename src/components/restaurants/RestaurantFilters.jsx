@@ -14,7 +14,7 @@ export default function RestaurantFilters({
     { key: 'all', label: 'All' },
     { key: 'meat', label: 'Meat' },
     { key: 'dairy', label: 'Dairy' },
-    { key: 'favorites', label: '❤️ Favorites' },
+    { key: 'favorites', label: 'Favorites' },
   ];
 
   const certifications = ['All', 'cRc', 'OU', 'OK', 'Star-K', 'Other'];
