@@ -141,52 +141,10 @@ export default function Admin() {
           <TabsContent value="businesses" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Business Management</span>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Business
-                  </motion.button>
-                </CardTitle>
+                <CardTitle>Business Directory Management</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <span className="text-sm text-slate-600">Manage restaurants, synagogues, and directory contacts</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Link to={createPageUrl('Restaurants')}>
-                      <motion.button
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                      >
-                        <UtensilsCrossed className="w-5 h-5 text-orange-600 mx-auto mb-1" />
-                        <p className="text-xs font-medium">Restaurants</p>
-                      </motion.button>
-                    </Link>
-                    <Link to={createPageUrl('Synagogues')}>
-                      <motion.button
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                      >
-                        <Building2 className="w-5 h-5 text-purple-600 mx-auto mb-1" />
-                        <p className="text-xs font-medium">Synagogues</p>
-                      </motion.button>
-                    </Link>
-                    <Link to={createPageUrl('Directory')}>
-                      <motion.button
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                      >
-                        <Users className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                        <p className="text-xs font-medium">Directory</p>
-                      </motion.button>
-                    </Link>
-                  </div>
-                </div>
+                <BusinessManager />
               </CardContent>
             </Card>
           </TabsContent>
@@ -194,19 +152,10 @@ export default function Admin() {
           <TabsContent value="minyans" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Minyan Schedule Management</CardTitle>
+                <CardTitle>Minyan Time Management</CardTitle>
               </CardHeader>
               <CardContent>
-                <Link to={createPageUrl('Minyan')}>
-                  <motion.button
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    <Clock className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-slate-800">View & Edit Minyan Times</p>
-                    <p className="text-xs text-slate-500 mt-1">Manage prayer schedules for all synagogues</p>
-                  </motion.button>
-                </Link>
+                <MinyanManager />
               </CardContent>
             </Card>
           </TabsContent>
@@ -223,43 +172,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Analytics & Reports</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-                      <BarChart3 className="w-6 h-6 text-blue-600 mb-2" />
-                      <p className="text-sm font-medium text-slate-800">Page Views</p>
-                      <p className="text-xs text-slate-500 mt-1">Track visits to restaurants & synagogues</p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
-                      <Eye className="w-6 h-6 text-green-600 mb-2" />
-                      <p className="text-sm font-medium text-slate-800">Click Analytics</p>
-                      <p className="text-xs text-slate-500 mt-1">See what users interact with most</p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-                      <Download className="w-6 h-6 text-purple-600 mb-2" />
-                      <p className="text-sm font-medium text-slate-800">Export Data</p>
-                      <p className="text-xs text-slate-500 mt-1">Download user activity reports</p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
-                      <TrendingUp className="w-6 h-6 text-orange-600 mb-2" />
-                      <p className="text-sm font-medium text-slate-800">Growth Metrics</p>
-                      <p className="text-xs text-slate-500 mt-1">Monitor app usage trends</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm font-medium text-slate-700 mb-2">Active Users</p>
-                    <p className="text-2xl font-bold text-slate-800">{analytics?.totalUsers || 0}</p>
-                    <p className="text-xs text-slate-500 mt-1">Total registered users</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AnalyticsDashboard />
           </TabsContent>
         </Tabs>
       </div>
