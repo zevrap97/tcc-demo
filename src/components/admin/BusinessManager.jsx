@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 
 export default function BusinessManager() {
   const [editDialog, setEditDialog] = useState({ open: false, type: null, item: null });
+  const [searchQuery, setSearchQuery] = useState('');
   const queryClient = useQueryClient();
 
   const { data: restaurants = [] } = useQuery({
@@ -51,6 +52,16 @@ export default function BusinessManager() {
     },
   });
 
+  const filteredRestaurants = restaurants.filter(r => 
+    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.address?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredSynagogues = synagogues.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.address?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleSave = () => {
     if (editDialog.type === 'restaurant') {
       updateRestaurantMutation.mutate({ id: editDialog.item.id, data: editDialog.item });
@@ -60,7 +71,14 @@ export default function BusinessManager() {
   };
 
   return (
-    <div>
+    <div className="space-y-4">
+      <Input
+        placeholder="Search by name or address..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full"
+      />
+      
       <Tabs defaultValue="restaurants">
         <TabsList className="w-full">
           <TabsTrigger value="restaurants" className="flex-1">
@@ -74,7 +92,7 @@ export default function BusinessManager() {
         </TabsList>
 
         <TabsContent value="restaurants" className="space-y-3 mt-4">
-          {restaurants.map((restaurant) => (
+          {filteredRestaurants.map((restaurant) => (
             <Card key={restaurant.id}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
@@ -113,7 +131,7 @@ export default function BusinessManager() {
         </TabsContent>
 
         <TabsContent value="synagogues" className="space-y-3 mt-4">
-          {synagogues.map((synagogue) => (
+          {filteredSynagogues.map((synagogue) => (
             <Card key={synagogue.id}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
