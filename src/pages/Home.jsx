@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import ZmanimDisplay from '@/components/home/ZmanimDisplay';
-import StoryViewer from '@/components/stories/StoryViewer';
 import { UtensilsCrossed, Clock, Building2, BookUser, ChevronRight } from 'lucide-react';
 
 const quickLinks = [
@@ -16,8 +15,6 @@ const quickLinks = [
 ];
 
 export default function Home() {
-  const [selectedStory, setSelectedStory] = useState(null);
-
   const { data: userSettings } = useQuery({
     queryKey: ['userSettings'],
     queryFn: async () => {
@@ -42,50 +39,9 @@ export default function Home() {
     },
   });
 
-  const { data: stories = [] } = useQuery({
-    queryKey: ['activeStories'],
-    queryFn: async () => {
-      const allStories = await base44.entities.Story.filter({ is_active: true }, '-created_date');
-      return allStories;
-    },
-  });
-
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* Stories */}
-        {stories.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col gap-3 absolute top-20 left-4 z-10"
-          >
-            {stories.slice(0, 2).map((story, index) => (
-              <motion.button
-                key={story.id}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedStory(story)}
-                className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-lg"
-                style={{
-                  background: index === 0 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
-                }}
-              >
-                <div className="w-full h-full rounded-full bg-white p-1">
-                  <div className="w-full h-full rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                    {story.slides?.[0]?.url && (
-                      <img 
-                        src={story.slides[0].url} 
-                        alt={story.title || 'Story'}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                </div>
-              </motion.button>
-            ))}
-          </motion.div>
-        )}
-
         {/* Zmanim Display */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -193,15 +149,6 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-
-      {/* Story Viewer */}
-      {selectedStory && (
-        <StoryViewer
-          stories={stories}
-          initialStoryIndex={stories.findIndex(s => s.id === selectedStory.id)}
-          onClose={() => setSelectedStory(null)}
-        />
-      )}
     </div>
   );
 }

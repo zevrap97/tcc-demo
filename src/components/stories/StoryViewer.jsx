@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-export default function StoryViewer({ stories, initialStoryIndex = 0, onClose }) {
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(initialStoryIndex);
+export default function StoryViewer({ stories, onClose }) {
+  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [startY, setStartY] = useState(null);
+  const [viewedStories, setViewedStories] = useState(new Set());
 
   const currentStory = stories[currentStoryIndex];
   const currentSlide = currentStory?.slides?.[currentSlideIndex];
@@ -18,11 +19,12 @@ export default function StoryViewer({ stories, initialStoryIndex = 0, onClose })
   // Track story view
   useEffect(() => {
     const trackView = async () => {
-      if (currentStory) {
+      if (currentStory && !viewedStories.has(currentStory.id)) {
         try {
           await base44.entities.Story.update(currentStory.id, {
             view_count: (currentStory.view_count || 0) + 1,
           });
+          setViewedStories(prev => new Set([...prev, currentStory.id]));
         } catch (err) {
           console.log('Failed to track view:', err);
         }
