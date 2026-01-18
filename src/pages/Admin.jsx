@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import StoryManager from '@/components/admin/StoryManager';
 
 export default function Admin() {
   const [loading, setLoading] = useState(false);
@@ -210,23 +211,10 @@ export default function Admin() {
           <TabsContent value="stories" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Stories & Announcements</span>
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    New Story
-                  </motion.button>
-                </CardTitle>
+                <CardTitle>Stories & Announcements</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-500 mb-4">Create and manage Instagram-style stories for community announcements</p>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
-                  <Image className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <p className="text-xs text-center text-slate-600">Upload images, set expiry dates, and track views</p>
-                </div>
+                <StoryManager />
               </CardContent>
             </Card>
           </TabsContent>
