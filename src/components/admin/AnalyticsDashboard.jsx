@@ -36,7 +36,7 @@ export default function AnalyticsDashboard() {
     .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
     .slice(0, 5)
     .map(s => ({
-      name: s.title.length > 20 ? s.title.substring(0, 20) + '...' : s.title,
+      name: s.title && s.title.length > 20 ? s.title.substring(0, 20) + '...' : (s.title || 'Untitled'),
       views: s.view_count || 0,
     }));
 
@@ -59,15 +59,21 @@ export default function AnalyticsDashboard() {
       const item = favorites.find(f => f.item_id === id);
       return {
         name: item?.item_name || 'Unknown',
-        count,
+        count: count || 0,
       };
     });
+  
+  const maxFavoriteCount = topFavorited.length > 0 ? topFavorited[0].count : 1;
 
   // User growth (mock data based on created dates)
   const userGrowth = users.reduce((acc, user) => {
-    const date = new Date(user.created_date);
-    const month = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-    acc[month] = (acc[month] || 0) + 1;
+    if (user.created_date) {
+      const date = new Date(user.created_date);
+      if (!isNaN(date.getTime())) {
+        const month = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        acc[month] = (acc[month] || 0) + 1;
+      }
+    }
     return acc;
   }, {});
 
@@ -198,7 +204,7 @@ export default function AnalyticsDashboard() {
                   <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-pink-500"
-                      style={{ width: `${(item.count / topFavorited[0]?.count) * 100}%` }}
+                      style={{ width: `${(item.count / maxFavoriteCount) * 100}%` }}
                     />
                   </div>
                   <span className="text-sm font-medium text-slate-800 w-8">{item.count}</span>
