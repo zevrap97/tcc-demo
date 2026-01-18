@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Sunset, Moon, Sunrise, Calendar } from 'lucide-react';
+import { Sun, Sunset, Moon, Sunrise } from 'lucide-react';
 
 const defaultZmanim = [
   { key: 'alot', label: 'Alot HaShachar', icon: Sunrise },
@@ -26,19 +26,16 @@ export default function ZmanimDisplay({ selectedZmanim }) {
   useEffect(() => {
     const fetchZmanim = async () => {
       try {
-        // Chicago coordinates
         const lat = 41.8781;
         const lng = -87.6298;
         const today = new Date();
         const dateStr = today.toISOString().split('T')[0];
         
-        // Fetch from Hebcal API
         const response = await fetch(
           `https://www.hebcal.com/zmanim?cfg=json&latitude=${lat}&longitude=${lng}&date=${dateStr}&tzid=America/Chicago`
         );
         const data = await response.json();
 
-        // Map API response to our format
         const times = {
           alot: formatTime(data.times?.alotHaShachar),
           sunrise: formatTime(data.times?.sunrise),
@@ -53,14 +50,12 @@ export default function ZmanimDisplay({ selectedZmanim }) {
         };
         setZmanimTimes(times);
 
-        // Fetch Hebrew date and Daf Yomi
         const hebcalResponse = await fetch(
           `https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1&strict=1`
         );
         const hebcalData = await hebcalResponse.json();
         setHebrewDate(hebcalData.hebrew || '');
 
-        // Fetch Daf Yomi
         const dafResponse = await fetch(
           `https://www.hebcal.com/shabbat?cfg=json&latitude=${lat}&longitude=${lng}&tzid=America/Chicago&M=on`
         );
@@ -84,7 +79,7 @@ export default function ZmanimDisplay({ selectedZmanim }) {
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true,
+      hour12: false,
     });
   };
 
@@ -93,45 +88,54 @@ export default function ZmanimDisplay({ selectedZmanim }) {
     : defaultZmanim.filter(z => defaultDisplayZmanim.includes(z.key));
 
   return (
-    <div className="bg-gradient-to-br from-blue-600 to-sky-500 rounded-2xl p-5 text-white shadow-lg">
-      {/* Header with Hebrew Date */}
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-3">
+      {/* Hebrew Date & Daf Yomi */}
+      <div className="flex items-center justify-between text-sm">
         <div>
-          <p className="text-white/80 text-xs font-medium uppercase tracking-wide">Today's Times</p>
-          <p className="text-lg font-bold mt-0.5" dir="rtl">{hebrewDate || 'Loading...'}</p>
+          <p className="text-slate-700 font-medium">{hebrewDate}</p>
+          <p className="text-xs text-slate-500">
+            {new Date().toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
         </div>
-        <div className="flex items-center gap-2 bg-white/20 rounded-xl px-3 py-1.5">
-          <Calendar className="w-4 h-4" />
-          <span className="text-sm font-medium">
-            {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-          </span>
-        </div>
+        {dafYomi && (
+          <div className="text-right">
+            <p className="text-xs text-slate-500">Daf Yomi</p>
+            <p className="text-sm font-semibold text-slate-700">{dafYomi}</p>
+          </div>
+        )}
       </div>
 
-      {/* Daf Yomi */}
-      <div className="bg-white/15 rounded-xl px-4 py-2.5 mb-4">
-        <p className="text-xs text-white/70">Daf Yomi</p>
-        <p className="font-semibold">{dafYomi}</p>
-      </div>
-
-      {/* Zmanim Grid */}
-      <div className="grid grid-cols-2 gap-2">
-        {displayZmanim.map(({ key, label, icon: Icon }) => (
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/10 rounded-xl px-3 py-2.5 flex items-center gap-2"
-          >
-            <Icon className="w-4 h-4 text-white/70" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-white/70 truncate">{label}</p>
-              <p className="font-semibold text-sm">
-                {loading ? '--:--' : zmanimTimes[key] || '--:--'}
-              </p>
-            </div>
-          </motion.div>
-        ))}
+      {/* Today's Times - 2x2 Grid */}
+      <div>
+        <h3 className="text-sm font-semibold text-slate-700 mb-2">Today's Times</h3>
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl p-4 h-24 animate-pulse border border-slate-100" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {displayZmanim.map(({ key, label, icon: Icon }) => {
+              const time = zmanimTimes[key];
+              return (
+                <motion.div 
+                  key={key}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white rounded-xl p-4 flex flex-col items-center justify-center gap-2 border border-slate-100 shadow-sm"
+                >
+                  <Icon className="w-6 h-6 text-blue-600" />
+                  <p className="text-xs text-slate-500 text-center">{label}</p>
+                  <p className="font-bold text-lg text-slate-800">{time || '--:--'}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

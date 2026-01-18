@@ -33,6 +33,23 @@ export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAdd
     }
   };
 
+  const getTimeColor = () => {
+    const now = new Date();
+    const [hours, minutes] = minyan.time.split(':').map(Number);
+    const minyanTime = new Date();
+    minyanTime.setHours(hours, minutes, 0, 0);
+
+    if (minyanTime < now) {
+      minyanTime.setDate(minyanTime.getDate() + 1);
+    }
+
+    const diffMinutes = Math.floor((minyanTime - now) / 60000);
+
+    if (diffMinutes < 10) return 'text-red-600';
+    if (diffMinutes < 60) return 'text-yellow-600';
+    return 'text-green-600';
+  };
+
   const openGoogleMaps = () => {
     const address = encodeURIComponent(minyan.address);
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`, '_blank');
