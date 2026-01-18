@@ -24,6 +24,7 @@ import StoryManager from '@/components/admin/StoryManager';
 import BusinessManager from '@/components/admin/BusinessManager';
 import MinyanManager from '@/components/admin/MinyanManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import NewsManager from '@/components/admin/NewsManager';
 
 export default function Admin() {
   const [loading, setLoading] = useState(false);
@@ -131,9 +132,10 @@ export default function Admin() {
 
         {/* Main Content */}
         <Tabs defaultValue="businesses" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="businesses">Businesses</TabsTrigger>
             <TabsTrigger value="minyans">Minyan Times</TabsTrigger>
+            <TabsTrigger value="news">News</TabsTrigger>
             <TabsTrigger value="stories">Stories</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
           </TabsList>
@@ -156,6 +158,17 @@ export default function Admin() {
               </CardHeader>
               <CardContent>
                 <MinyanManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="news" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Community News</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <NewsManager />
               </CardContent>
             </Card>
           </TabsContent>

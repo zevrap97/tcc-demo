@@ -31,26 +31,61 @@ export default function Home() {
     },
   });
 
+  const { data: news = [] } = useQuery({
+    queryKey: ['activeNews'],
+    queryFn: async () => {
+      const allNews = await base44.entities.News.filter({ is_active: true }, '-priority', 5);
+      return allNews;
+    },
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* Welcome Message */}
+        {/* Zmanim Display */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <p className="text-slate-500 text-sm">Welcome to</p>
-          <h1 className="text-2xl font-bold text-slate-800">Chicago Jewish Community</h1>
-        </motion.div>
-
-        {/* Zmanim Display */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
           <ZmanimDisplay selectedZmanim={userSettings?.display_zmanim} />
         </motion.div>
+
+        {/* News from Chicago Center */}
+        {news.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-3"
+          >
+            <h2 className="text-lg font-semibold text-slate-800">News from Chicago Center</h2>
+            <div className="space-y-3">
+              {news.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                  className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+                >
+                  <div className="flex gap-3">
+                    {item.image_url && (
+                      <img 
+                        src={item.image_url} 
+                        alt="" 
+                        className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-800 text-sm">{item.title}</h3>
+                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{item.content}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Quick Links */}
         <div>
