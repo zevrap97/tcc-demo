@@ -11,7 +11,8 @@ import {
   Plus, 
   LogOut,
   LogIn,
-  CreditCard
+  CreditCard,
+  Activity
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -69,6 +70,10 @@ export default function Sidebar({ isOpen, onClose }) {
     { icon: CreditCard, label: 'Submit Business', page: 'SubmitBusiness', color: 'text-blue-600' },
     { icon: Mail, label: 'Contact Us', page: 'Contact', color: 'text-blue-600' },
   ];
+
+  const adminItems = user?.role === 'admin' ? [
+    { icon: Activity, label: 'Admin Portal', page: 'Admin', color: 'text-purple-600' },
+  ] : [];
 
   const handleLogout = () => {
     base44.auth.logout();
@@ -132,6 +137,18 @@ export default function Sidebar({ isOpen, onClose }) {
 
               {/* Menu Items */}
               <nav className="flex-1 py-2">
+                {adminItems.map(({ icon: Icon, label, page, color }) => (
+                  <Link
+                    key={page}
+                    to={createPageUrl(page)}
+                    onClick={onClose}
+                    className="flex items-center gap-3 px-6 py-3 mb-2 bg-purple-50 hover:bg-purple-100 transition-colors"
+                  >
+                    <Icon className={`w-5 h-5 ${color}`} />
+                    <span className="text-slate-700 font-medium">{label}</span>
+                  </Link>
+                ))}
+                
                 {menuItems.map(({ icon: Icon, label, page, color }) => (
                   <Link
                     key={page}
