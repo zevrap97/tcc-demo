@@ -9,7 +9,7 @@ import {
   MapPin
 } from 'lucide-react';
 
-export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAddToCalendar }) {
+export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAddToCalendar, distance }) {
   const [expanded, setExpanded] = useState(false);
 
   const getTimeUntil = () => {
@@ -76,6 +76,15 @@ export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAdd
               <Clock className="w-3 h-3" />
               Starts in {getTimeUntil()}
             </span>
+            {distance && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  ~{distance} mi
+                </span>
+              </>
+            )}
           </div>
         </div>
 

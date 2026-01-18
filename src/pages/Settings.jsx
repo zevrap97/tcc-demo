@@ -63,7 +63,7 @@ export default function Settings() {
     if (existingSettings) {
       setSettings({
         dark_mode: existingSettings.dark_mode || false,
-        display_zmanim: existingSettings.display_zmanim || zmanimOptions.map(z => z.key),
+        display_zmanim: existingSettings.display_zmanim || ['sunrise', 'sofZmanShma', 'sunset', 'tzait'],
         default_nusach: existingSettings.default_nusach || 'All',
       });
     }

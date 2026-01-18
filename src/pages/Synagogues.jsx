@@ -3,10 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import SynagogueCard from '@/components/synagogue/SynagogueCard';
-import { Search, Heart, MapPin, Filter } from 'lucide-react';
+import { Search, Heart, MapPin, Filter, Map, List } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default markers
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 export default function Synagogues() {
+  const [viewMode, setViewMode] = useState('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [nusachFilter, setNusachFilter] = useState('All');
@@ -166,7 +178,25 @@ export default function Synagogues() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-lg mx-auto px-4 py-4 space-y-4">
         {/* Header */}
-        <h1 className="text-xl font-bold text-slate-800">Synagogues</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-slate-800">Synagogues</h1>
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
+            >
+              <List className="w-5 h-5" />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setViewMode('map')}
+              className={`p-2 rounded-lg ${viewMode === 'map' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}
+            >
+              <Map className="w-5 h-5" />
+            </motion.button>
+          </div>
+        </div>
 
         {/* Search */}
         <div className="relative">
@@ -217,8 +247,9 @@ export default function Synagogues() {
           ))}
         </div>
 
-        {/* Synagogue List */}
-        <div className="space-y-3">
+        {/* Content */}
+        {viewMode === 'list' ? (
+          <div className="space-y-3">
           {isLoading ? (
             Array(5).fill(0).map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-4 animate-pulse">
@@ -247,7 +278,39 @@ export default function Synagogues() {
               ))}
             </AnimatePresence>
           )}
-        </div>
+          </div>
+        ) : (
+          <div className="h-[60vh] rounded-2xl overflow-hidden">
+            <MapContainer
+              center={[41.8781, -87.6298]}
+              zoom={12}
+              className="h-full w-full"
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; OpenStreetMap'
+              />
+              {filteredSynagogues
+                .filter(s => s.latitude && s.longitude)
+                .map((synagogue) => (
+                  <Marker
+                    key={synagogue.id}
+                    position={[synagogue.latitude, synagogue.longitude]}
+                  >
+                    <Popup>
+                      <div className="text-sm">
+                        <p className="font-semibold">{synagogue.name}</p>
+                        <p className="text-slate-500">{synagogue.nusach}</p>
+                        {synagogue.rabbi && (
+                          <p className="text-xs text-slate-400">Rabbi {synagogue.rabbi}</p>
+                        )}
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+            </MapContainer>
+          </div>
+        )}
       </div>
 
       {/* Calendar Selection Dialog */}

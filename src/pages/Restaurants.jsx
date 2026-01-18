@@ -138,13 +138,15 @@ export default function Restaurants() {
           />
         </div>
 
-        {/* Filters */}
-        <RestaurantFilters
-          quickFilter={quickFilter}
-          setQuickFilter={setQuickFilter}
-          filters={filters}
-          setFilters={setFilters}
-        />
+        {/* Filters - Only show for list view */}
+        {viewMode === 'list' && (
+          <RestaurantFilters
+            quickFilter={quickFilter}
+            setQuickFilter={setQuickFilter}
+            filters={filters}
+            setFilters={setFilters}
+          />
+        )}
 
         {/* Content */}
         {viewMode === 'list' ? (
@@ -180,7 +182,7 @@ export default function Restaurants() {
             )}
           </div>
         ) : (
-          <div className="h-[60vh] rounded-2xl overflow-hidden">
+          <div className="relative h-[70vh] rounded-2xl overflow-hidden">
             <MapContainer
               center={[41.8781, -87.6298]}
               zoom={12}
@@ -206,6 +208,16 @@ export default function Restaurants() {
                   </Marker>
                 ))}
             </MapContainer>
+            
+            {/* Filters overlay on map */}
+            <div className="absolute top-4 left-4 right-4 z-[1000] bg-white rounded-2xl shadow-lg p-4">
+              <RestaurantFilters
+                quickFilter={quickFilter}
+                setQuickFilter={setQuickFilter}
+                filters={filters}
+                setFilters={setFilters}
+              />
+            </div>
           </div>
         )}
       </div>

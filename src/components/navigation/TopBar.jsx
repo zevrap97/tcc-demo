@@ -7,7 +7,10 @@ import StoryViewer from '../stories/StoryViewer';
 
 export default function TopBar({ onMenuClick }) {
   const [showStory, setShowStory] = useState(false);
-  const [hasNewStory, setHasNewStory] = useState(true);
+  const [viewedStoryIds, setViewedStoryIds] = useState(() => {
+    const saved = localStorage.getItem('viewedStories');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const { data: stories = [] } = useQuery({
     queryKey: ['stories'],
@@ -21,6 +24,15 @@ export default function TopBar({ onMenuClick }) {
     }
     return true;
   });
+
+  const hasNewStory = activeStories.some(s => !viewedStoryIds.includes(s.id));
+
+  const handleStoryClose = () => {
+    setShowStory(false);
+    const newViewedIds = [...viewedStoryIds, ...activeStories.map(s => s.id)];
+    setViewedStoryIds(newViewedIds);
+    localStorage.setItem('viewedStories', JSON.stringify(newViewedIds));
+  };
 
   return (
     <>
@@ -43,7 +55,6 @@ export default function TopBar({ onMenuClick }) {
             onClick={() => {
               if (activeStories.length > 0) {
                 setShowStory(true);
-                setHasNewStory(false);
               }
             }}
             className="relative w-10 h-10"
@@ -66,7 +77,7 @@ export default function TopBar({ onMenuClick }) {
         {showStory && activeStories.length > 0 && (
           <StoryViewer 
             stories={activeStories} 
-            onClose={() => setShowStory(false)} 
+            onClose={handleStoryClose} 
           />
         )}
       </AnimatePresence>

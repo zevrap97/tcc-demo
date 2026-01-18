@@ -15,6 +15,8 @@ const defaultZmanim = [
   { key: 'tzait', label: 'Tzait HaKochavim', icon: Moon },
 ];
 
+const defaultDisplayZmanim = ['sunrise', 'sofZmanShma', 'sunset', 'tzait'];
+
 export default function ZmanimDisplay({ selectedZmanim }) {
   const [zmanimTimes, setZmanimTimes] = useState({});
   const [hebrewDate, setHebrewDate] = useState('');
@@ -88,7 +90,7 @@ export default function ZmanimDisplay({ selectedZmanim }) {
 
   const displayZmanim = selectedZmanim?.length > 0 
     ? defaultZmanim.filter(z => selectedZmanim.includes(z.key))
-    : defaultZmanim;
+    : defaultZmanim.filter(z => defaultDisplayZmanim.includes(z.key));
 
   return (
     <div className="bg-gradient-to-br from-blue-600 to-sky-500 rounded-2xl p-5 text-white shadow-lg">

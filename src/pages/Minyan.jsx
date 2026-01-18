@@ -4,12 +4,48 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import MinyanCard from '@/components/minyan/MinyanCard';
 import NextMinyanBanner from '@/components/minyan/NextMinyanBanner';
-import { Search, Clock, Heart, Filter } from 'lucide-react';
+import { Clock, Heart, Filter, MapPin } from 'lucide-react';
 
 export default function Minyan() {
   const [quickFilter, setQuickFilter] = useState('all');
   const [nusachFilter, setNusachFilter] = useState('All');
+  const [userLocation, setUserLocation] = useState(null);
   const queryClient = useQueryClient();
+
+  // Get user location
+  React.useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        () => {
+          // Default to Chicago if location denied
+          setUserLocation({ lat: 41.8781, lng: -87.6298 });
+        }
+      );
+    } else {
+      setUserLocation({ lat: 41.8781, lng: -87.6298 });
+    }
+  }, []);
+
+  // Calculate distance between two points
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959; // Radius of Earth in miles
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
   const { data: minyans = [], isLoading } = useQuery({
     queryKey: ['minyans'],
@@ -92,11 +128,23 @@ export default function Minyan() {
         if (nusachFilter !== 'All' && minyan.nusach !== nusachFilter) return false;
 
         // Quick filters
-        if (quickFilter === 'within10' || quickFilter === 'soon') {
+        if (quickFilter === 'within10') {
+          if (!userLocation || !minyan.latitude || !minyan.longitude) return false;
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            minyan.latitude,
+            minyan.longitude
+          );
+          // 10 minutes drive = approximately 5 miles
+          if (distance > 5) return false;
+        }
+
+        if (quickFilter === 'soon') {
           const [hours, minutes] = minyan.time.split(':').map(Number);
           const minyanMinutes = hours * 60 + minutes;
           const diff = minyanMinutes - currentMinutes;
-          if (diff < 0 || diff > 30) return false; // Within 30 minutes
+          if (diff < 0 || diff > 30) return false;
         }
 
         if (quickFilter === 'favorites' && !isFavorite(minyan.synagogue_id)) {
@@ -110,23 +158,30 @@ export default function Minyan() {
         const [bH, bM] = b.time.split(':').map(Number);
         return (aH * 60 + aM) - (bH * 60 + bM);
       });
-  }, [minyans, quickFilter, nusachFilter, currentDay, favorites]);
+  }, [minyans, quickFilter, nusachFilter, currentDay, favorites, userLocation]);
 
-  // Get next minyan
+  // Get next minyan (ignore favorites filter for this)
   const nextMinyan = useMemo(() => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    return filteredMinyans.find((minyan) => {
+    const allTodayMinyans = minyans.filter((minyan) => {
+      if (!minyan.day_of_week?.includes(currentDay)) return false;
+      if (nusachFilter !== 'All' && minyan.nusach !== nusachFilter) return false;
+      return true;
+    });
+
+    return allTodayMinyans.find((minyan) => {
       const [hours, minutes] = minyan.time.split(':').map(Number);
       const minyanMinutes = hours * 60 + minutes;
       return minyanMinutes > currentMinutes;
     });
-  }, [filteredMinyans]);
+  }, [minyans, currentDay, nusachFilter]);
 
   const quickFilters = [
     { key: 'all', label: 'All', icon: Filter },
     { key: 'soon', label: 'Soon', icon: Clock },
+    { key: 'within10', label: '10m Drive', icon: MapPin },
     { key: 'favorites', label: 'Favorites', icon: Heart },
   ];
 
@@ -199,15 +254,27 @@ export default function Minyan() {
             </div>
           ) : (
             <AnimatePresence>
-              {filteredMinyans.map((minyan) => (
-                <MinyanCard
-                  key={minyan.id}
-                  minyan={minyan}
-                  isFavorite={isFavorite(minyan.synagogue_id)}
-                  onToggleFavorite={() => toggleFavoriteMutation.mutate(minyan)}
-                  onAddToCalendar={() => addToCalendar(minyan)}
-                />
-              ))}
+              {filteredMinyans.map((minyan) => {
+                const distance = userLocation && minyan.latitude && minyan.longitude
+                  ? calculateDistance(
+                      userLocation.lat,
+                      userLocation.lng,
+                      minyan.latitude,
+                      minyan.longitude
+                    ).toFixed(1)
+                  : null;
+                
+                return (
+                  <MinyanCard
+                    key={minyan.id}
+                    minyan={minyan}
+                    isFavorite={isFavorite(minyan.synagogue_id)}
+                    onToggleFavorite={() => toggleFavoriteMutation.mutate(minyan)}
+                    onAddToCalendar={() => addToCalendar(minyan)}
+                    distance={distance}
+                  />
+                );
+              })}
             </AnimatePresence>
           )}
         </div>
