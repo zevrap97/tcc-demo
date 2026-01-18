@@ -12,8 +12,8 @@ export default function RestaurantFilters({
 }) {
   const quickFilters = [
     { key: 'all', label: 'All' },
-    { key: 'meat', label: '🥩 Meat' },
-    { key: 'dairy', label: '🧀 Dairy' },
+    { key: 'meat', label: 'Meat' },
+    { key: 'dairy', label: 'Dairy' },
     { key: 'favorites', label: '❤️ Favorites' },
   ];
 
