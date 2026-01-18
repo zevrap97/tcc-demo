@@ -14,6 +14,7 @@ export default function StoryViewer({ stories, onClose }) {
   const currentStory = stories[currentStoryIndex];
   const currentSlide = currentStory?.slides?.[currentSlideIndex];
   const slideDuration = (currentSlide?.duration || 5) * 1000;
+  const [videoEnded, setVideoEnded] = useState(false);
 
   // Track story view
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function StoryViewer({ stories, onClose }) {
   }, [currentSlideIndex, currentStoryIndex]);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || currentSlide?.type === 'video') return;
     
     const interval = setInterval(() => {
       setProgress(prev => {
@@ -71,7 +72,14 @@ export default function StoryViewer({ stories, onClose }) {
     }, 50);
 
     return () => clearInterval(interval);
-  }, [slideDuration, isPaused, goToNextSlide]);
+  }, [slideDuration, isPaused, goToNextSlide, currentSlide?.type]);
+
+  useEffect(() => {
+    if (videoEnded) {
+      goToNextSlide();
+      setVideoEnded(false);
+    }
+  }, [videoEnded, goToNextSlide]);
 
   const handleTap = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -153,11 +161,23 @@ export default function StoryViewer({ stories, onClose }) {
         className="flex-1 flex items-center justify-center"
         onClick={handleTap}
       >
-        <img
-          src={currentSlide.image_url}
-          alt=""
-          className="max-w-full max-h-full object-contain"
-        />
+        {currentSlide.type === 'video' ? (
+          <video
+            key={`${currentStoryIndex}-${currentSlideIndex}`}
+            src={currentSlide.url}
+            autoPlay
+            playsInline
+            muted
+            onEnded={() => setVideoEnded(true)}
+            className="max-w-full max-h-full object-contain"
+          />
+        ) : (
+          <img
+            src={currentSlide.url || currentSlide.image_url}
+            alt=""
+            className="max-w-full max-h-full object-contain"
+          />
+        )}
       </div>
 
       {/* Pull down indicator */}

@@ -38,16 +38,21 @@ export default function StoryManager() {
     },
   });
 
-  const handleImageUpload = async (file) => {
+  const handleFileUpload = async (file) => {
     if (!file) return;
     
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const isVideo = file.type.startsWith('video/');
       
       setNewStory({
         ...newStory,
-        slides: [...newStory.slides, { image_url: file_url, duration: 5 }],
+        slides: [...newStory.slides, { 
+          type: isVideo ? 'video' : 'image',
+          url: file_url, 
+          duration: isVideo ? 15 : 5 
+        }],
       });
     } catch (error) {
       console.error('Upload failed:', error);
@@ -125,7 +130,14 @@ export default function StoryManager() {
               <div className="grid grid-cols-3 gap-2">
                 {newStory.slides.map((slide, index) => (
                   <div key={index} className="relative aspect-[9/16] rounded-lg overflow-hidden bg-slate-100">
-                    <img src={slide.image_url} alt="" className="w-full h-full object-cover" />
+                    {slide.type === 'video' ? (
+                      <video src={slide.url} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={slide.url || slide.image_url} alt="" className="w-full h-full object-cover" />
+                    )}
+                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/60 text-white text-[10px] rounded">
+                      {slide.type === 'video' ? 'Video' : 'Image'}
+                    </div>
                     <button
                       onClick={() => removeSlide(index)}
                       className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
@@ -141,8 +153,8 @@ export default function StoryManager() {
             <label className="block">
               <input
                 type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e.target.files[0])}
+                accept="image/*,video/*"
+                onChange={(e) => handleFileUpload(e.target.files[0])}
                 className="hidden"
               />
               <div className="w-full p-4 border-2 border-dashed border-slate-300 rounded-lg text-center cursor-pointer hover:border-blue-400 transition-colors">
@@ -151,7 +163,8 @@ export default function StoryManager() {
                 ) : (
                   <>
                     <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                    <p className="text-sm text-slate-600">Add Image Slide</p>
+                    <p className="text-sm text-slate-600">Add Image or Video</p>
+                    <p className="text-xs text-slate-400 mt-1">Max 30 seconds for videos</p>
                   </>
                 )}
               </div>
@@ -221,8 +234,19 @@ export default function StoryManager() {
               {story.slides && story.slides.length > 0 && (
                 <div className="flex gap-2 mt-3 overflow-x-auto">
                   {story.slides.map((slide, index) => (
-                    <div key={index} className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-slate-100">
-                      <img src={slide.image_url} alt="" className="w-full h-full object-cover" />
+                    <div key={index} className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-slate-100 relative">
+                      {slide.type === 'video' ? (
+                        <>
+                          <video src={slide.url} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <div className="w-6 h-6 rounded-full bg-white/80 flex items-center justify-center">
+                              <div className="w-0 h-0 border-l-4 border-l-slate-700 border-t-3 border-b-3 border-t-transparent border-b-transparent ml-0.5" />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <img src={slide.url || slide.image_url} alt="" className="w-full h-full object-cover" />
+                      )}
                     </div>
                   ))}
                 </div>
