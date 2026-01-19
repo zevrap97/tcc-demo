@@ -90,7 +90,9 @@ export default function Home() {
                           className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                         />
                       )}
-                      <h3 className="font-semibold text-blue-900 text-xs text-left">{item.title}</h3>
+                      <p className="font-semibold text-blue-900 text-xs text-left line-clamp-2">
+                        {item.title || item.content}
+                      </p>
                     </div>
                     <ChevronDown 
                       className={`w-4 h-4 text-blue-700 flex-shrink-0 transition-transform ${
