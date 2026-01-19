@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import ZmanimDisplay from '@/components/home/ZmanimDisplay';
 import NextMinyanCard from '@/components/home/NextMinyanCard';
-import { UtensilsCrossed, Clock, Building2, BookUser, ChevronRight } from 'lucide-react';
+import { UtensilsCrossed, Clock, Building2, BookUser, ChevronRight, ChevronDown } from 'lucide-react';
 
 const quickLinks = [
   { icon: UtensilsCrossed, label: 'Restaurants', page: 'Restaurants', color: 'from-orange-400 to-red-500' },
@@ -16,6 +16,12 @@ const quickLinks = [
 ];
 
 export default function Home() {
+  const [expandedNews, setExpandedNews] = React.useState({});
+
+  const toggleNews = (id) => {
+    setExpandedNews(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   const { data: userSettings } = useQuery({
     queryKey: ['userSettings'],
     queryFn: async () => {
@@ -60,31 +66,49 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-3"
+            className="space-y-2"
           >
-            <h2 className="text-lg font-semibold text-slate-800">News from Chicago Center</h2>
-            <div className="space-y-3">
+            <h2 className="text-sm font-semibold text-slate-700 px-1">News from Chicago Center</h2>
+            <div className="space-y-2">
               {news.map((item, index) => (
                 <motion.div
                   key={item.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.15 + index * 0.05 }}
-                  className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+                  className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl overflow-hidden border border-blue-200/50"
                 >
-                  <div className="flex gap-3">
-                    {item.image_url && (
-                      <img 
-                        src={item.image_url} 
-                        alt="" 
-                        className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-800 text-sm">{item.title}</h3>
-                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{item.content}</p>
+                  <button
+                    onClick={() => toggleNews(item.id)}
+                    className="w-full p-3 flex items-center justify-between hover:bg-blue-100/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {item.image_url && (
+                        <img 
+                          src={item.image_url} 
+                          alt="" 
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                        />
+                      )}
+                      <h3 className="font-semibold text-blue-900 text-xs text-left">{item.title}</h3>
                     </div>
-                  </div>
+                    <ChevronDown 
+                      className={`w-4 h-4 text-blue-700 flex-shrink-0 transition-transform ${
+                        expandedNews[item.id] ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  
+                  {expandedNews[item.id] && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="px-3 pb-3"
+                    >
+                      <p className="text-xs text-blue-800 leading-relaxed">{item.content}</p>
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
             </div>
