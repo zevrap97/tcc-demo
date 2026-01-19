@@ -106,8 +106,11 @@ export default function Home() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="px-3 pb-3"
+                      className="px-3 pb-3 space-y-2"
                     >
+                      {item.title && (
+                        <h3 className="font-bold text-blue-900 text-sm">{item.title}</h3>
+                      )}
                       <p className="text-xs text-blue-800 leading-relaxed">{item.content}</p>
                     </motion.div>
                   )}
