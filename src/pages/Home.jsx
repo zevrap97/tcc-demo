@@ -5,6 +5,7 @@ import { createPageUrl } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import ZmanimDisplay from '@/components/home/ZmanimDisplay';
+import NextMinyanCard from '@/components/home/NextMinyanCard';
 import { UtensilsCrossed, Clock, Building2, BookUser, ChevronRight } from 'lucide-react';
 
 const quickLinks = [
@@ -42,6 +43,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
+        {/* Next Minyan Card */}
+        <NextMinyanCard />
+
         {/* Zmanim Display */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
