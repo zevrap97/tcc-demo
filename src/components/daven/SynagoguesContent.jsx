@@ -200,7 +200,7 @@ export default function SynagoguesContent() {
             </motion.button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-1 border border-slate-200 rounded-lg bg-white">
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setViewMode('list')}
