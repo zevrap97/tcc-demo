@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, UtensilsCrossed, Clock, Building2, BookUser } from 'lucide-react';
+import { Home, UtensilsCrossed, Clock, Heart, BookUser } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { icon: Home, label: 'Home', page: 'Home' },
   { icon: UtensilsCrossed, label: 'Food', page: 'Restaurants' },
-  { icon: Clock, label: 'Minyan', page: 'Minyan' },
-  { icon: Building2, label: 'Shuls', page: 'Synagogues' },
+  { icon: Clock, label: 'Daven', page: 'Daven' },
+  { icon: Heart, label: 'Favorites', page: 'Favorites' },
   { icon: BookUser, label: 'Directory', page: 'Directory' },
 ];
 
