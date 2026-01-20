@@ -365,17 +365,214 @@ export default function AnalyticsDashboard() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={userGrowthData}>
+              <AreaChart data={userGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip />
-                <Line type="monotone" dataKey="users" stroke="#10b981" strokeWidth={2} />
-              </LineChart>
+                <Area type="monotone" dataKey="users" stroke="#10b981" fill="#10b98133" strokeWidth={2} />
+              </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       )}
+
+      {/* Restaurant Types */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Restaurant Types</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={restaurantTypes}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {restaurantTypes.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Synagogue Nusach Distribution */}
+      {nusachData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Synagogue Nusach Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={nusachData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="nusach" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#8b5cf6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Minyan Prayer Types */}
+      {minyanByPrayer.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Minyan Times by Prayer Type</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={minyanByPrayer} layout="horizontal">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tick={{ fontSize: 11 }} />
+                <YAxis dataKey="type" type="category" tick={{ fontSize: 11 }} width={80} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#0ea5e9" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Directory Professions */}
+      {topProfessions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Directory - Top Professions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={topProfessions}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#14b8a6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Price Range Distribution */}
+      {priceRangeData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Restaurant Price Range</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={priceRangeData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="range" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#f59e0b" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Platform Activity Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Platform Activity Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <RadarChart data={activityData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="category" tick={{ fontSize: 11 }} />
+              <PolarRadiusAxis tick={{ fontSize: 11 }} />
+              <Radar name="Content" dataKey="count" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
+              <Tooltip />
+            </RadarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* User Roles */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">User Roles</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={userRoles}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {userRoles.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+                <Activity className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Active News</p>
+                <p className="text-xl font-bold text-slate-800">{activeNews}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-yellow-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Zmanim Entries</p>
+                <p className="text-xl font-bold text-slate-800">{zmanim.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center">
+                <Star className="w-5 h-5 text-rose-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Active Stories</p>
+                <p className="text-xl font-bold text-slate-800">{stories.filter(s => s.is_active).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
