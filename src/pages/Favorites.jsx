@@ -136,6 +136,31 @@ export default function Favorites() {
     .map(f => synagogues.find(s => s.id === f.item_id))
     .filter(Boolean);
 
+  const getNextMinyanForAllFavorites = () => {
+    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const favoriteSynagogueIds = synagogueFavorites.map(s => s.id);
+    
+    return minyans
+      .filter(m => favoriteSynagogueIds.includes(m.synagogue_id))
+      .filter(m => m.day_of_week?.includes(currentDay))
+      .filter(m => {
+        const [hours, minutes] = m.time.split(':').map(Number);
+        return hours * 60 + minutes > currentMinutes;
+      })
+      .map(m => {
+        const synagogue = synagogues.find(s => s.id === m.synagogue_id);
+        return { ...m, synagogue };
+      })
+      .sort((a, b) => {
+        const [aH, aM] = a.time.split(':').map(Number);
+        const [bH, bM] = b.time.split(':').map(Number);
+        return (aH * 60 + aM) - (bH * 60 + bM);
+      });
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
@@ -241,16 +266,39 @@ export default function Favorites() {
                   Browse Synagogues
                 </Link>
               </div>
+            ) : getNextMinyanForAllFavorites().length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-2xl">
+                <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">No upcoming minyans today</p>
+              </div>
             ) : (
-              synagogueFavorites.map((synagogue) => (
-                <SynagogueCard
-                  key={synagogue.id}
-                  synagogue={synagogue}
-                  nextPrayers={getNextPrayers(synagogue.id)}
-                  isFavorite={true}
-                  onToggleFavorite={() => toggleFavorite(synagogue, 'synagogue')}
-                  onAddToCalendar={() => setCalendarDialog({ open: true, synagogue })}
-                />
+              getNextMinyanForAllFavorites().map((minyan) => (
+                <motion.div
+                  key={minyan.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg font-semibold text-slate-800">
+                          {formatTime(minyan.time)}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                          {minyan.prayer_type}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-slate-700">{minyan.synagogue?.name}</p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                        <span className="px-2 py-0.5 rounded bg-slate-100">{minyan.nusach}</span>
+                        {minyan.address && (
+                          <span className="truncate">{minyan.address}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               ))
             )}
           </TabsContent>
