@@ -164,13 +164,6 @@ export default function Favorites() {
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-50 p-4">
-        <Link
-          to={createPageUrl('Home')}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-6"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </Link>
         <div className="text-center py-12">
           <Heart className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p className="text-slate-600 mb-4">Please log in to view your favorites</p>
@@ -188,14 +181,7 @@ export default function Favorites() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-100 pt-12 pb-4 px-4">
-        <Link
-          to={createPageUrl('Home')}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </Link>
+      <div className="bg-white border-b border-slate-100 pt-4 pb-4 px-4">
         <h1 className="text-xl font-bold text-slate-800">My Favorites</h1>
       </div>
 
