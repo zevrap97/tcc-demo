@@ -57,17 +57,17 @@ export default function TopBar({ onMenuClick }) {
                 setShowStory(true);
               }
             }}
-            className="relative w-12 h-12 -m-1"
+            className="relative w-16 h-16 -m-2"
           >
-            <div className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 p-0.5 ${
+            <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 p-0.5 ${
               hasNewStory && activeStories.length > 0 ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''
             }`}>
               <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                <span className="text-lg">📢</span>
+                <span className="text-2xl">📢</span>
               </div>
             </div>
             {hasNewStory && activeStories.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+              <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
             )}
           </motion.button>
         </div>
