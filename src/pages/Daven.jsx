@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, Building2 } from 'lucide-react';
-import MinyanContent from '@/components/daven/MinyanContent';
-import SynagoguesContent from '@/components/daven/SynagoguesContent';
+import MinyanContent from '@/components/daven/MinyanContent.jsx';
+import SynagoguesContent from '@/components/daven/SynagoguesContent.jsx';
 
 export default function Daven() {
   return (
