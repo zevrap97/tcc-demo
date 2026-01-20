@@ -26,6 +26,7 @@ import MinyanManager from '@/components/admin/MinyanManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import NewsManager from '@/components/admin/NewsManager';
 import ZmanimManager from '@/components/admin/ZmanimManager';
+import ZmanimDisplay from '@/components/home/ZmanimDisplay';
 
 export default function Admin() {
   const [loading, setLoading] = useState(false);
@@ -165,9 +166,10 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="zmanim" className="space-y-4">
+            <ZmanimDisplay />
             <Card>
               <CardHeader>
-                <CardTitle>Zmanim & Daf Yomi</CardTitle>
+                <CardTitle>Zmanim & Daf Yomi Management</CardTitle>
               </CardHeader>
               <CardContent>
                 <ZmanimManager />
