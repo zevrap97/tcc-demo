@@ -1,87 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Sunset, Moon, Sunrise } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 const defaultZmanim = [
-  { key: 'alot', label: 'Alot HaShachar', icon: Sunrise },
+  { key: 'alot_hashachar', label: 'Alot HaShachar', icon: Sunrise },
   { key: 'sunrise', label: 'Sunrise', icon: Sun },
-  { key: 'sofZmanShma', label: 'Sof Zman Shma', icon: Sun },
-  { key: 'sofZmanTefilla', label: 'Sof Zman Tefilla', icon: Sun },
+  { key: 'shema_gra', label: 'Sof Zman Shma', icon: Sun },
+  { key: 'tefilla_gra', label: 'Sof Zman Tefilla', icon: Sun },
   { key: 'chatzot', label: 'Chatzot', icon: Sun },
-  { key: 'minchaGedola', label: 'Mincha Gedola', icon: Sun },
-  { key: 'minchaKetana', label: 'Mincha Ketana', icon: Sunset },
-  { key: 'plagHamincha', label: 'Plag HaMincha', icon: Sunset },
+  { key: 'mincha_gedola', label: 'Mincha Gedola', icon: Sun },
+  { key: 'mincha_ketana', label: 'Mincha Ketana', icon: Sunset },
+  { key: 'plag_hamincha', label: 'Plag HaMincha', icon: Sunset },
   { key: 'sunset', label: 'Sunset', icon: Sunset },
-  { key: 'tzait', label: 'Tzait HaKochavim', icon: Moon },
+  { key: 'tzait_hakochavim', label: 'Tzait HaKochavim', icon: Moon },
 ];
 
-const defaultDisplayZmanim = ['sunrise', 'sofZmanShma', 'sunset', 'tzait'];
+const defaultDisplayZmanim = ['sunrise', 'shema_gra', 'sunset', 'tzait_hakochavim'];
 
 export default function ZmanimDisplay({ selectedZmanim }) {
-  const [zmanimTimes, setZmanimTimes] = useState({});
-  const [hebrewDate, setHebrewDate] = useState('');
-  const [dafYomi, setDafYomi] = useState('');
-  const [loading, setLoading] = useState(true);
+  const today = new Date().toISOString().split('T')[0];
 
-  useEffect(() => {
-    const fetchZmanim = async () => {
-      try {
-        const lat = 41.8781;
-        const lng = -87.6298;
-        const today = new Date();
-        const dateStr = today.toISOString().split('T')[0];
-        
-        const response = await fetch(
-          `https://www.hebcal.com/zmanim?cfg=json&latitude=${lat}&longitude=${lng}&date=${dateStr}&tzid=America/Chicago`
-        );
-        const data = await response.json();
-
-        const times = {
-          alot: formatTime(data.times?.alotHaShachar),
-          sunrise: formatTime(data.times?.sunrise),
-          sofZmanShma: formatTime(data.times?.sofZmanShmaMGA),
-          sofZmanTefilla: formatTime(data.times?.sofZmanTfillaMGA),
-          chatzot: formatTime(data.times?.chatzot),
-          minchaGedola: formatTime(data.times?.minchaGedola),
-          minchaKetana: formatTime(data.times?.minchaKetana),
-          plagHamincha: formatTime(data.times?.plagHaMincha),
-          sunset: formatTime(data.times?.sunset),
-          tzait: formatTime(data.times?.tzeit),
-        };
-        setZmanimTimes(times);
-
-        const hebcalResponse = await fetch(
-          `https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1&strict=1`
-        );
-        const hebcalData = await hebcalResponse.json();
-        setHebrewDate(hebcalData.hebrew || '');
-
-        const dafResponse = await fetch(
-          `https://www.hebcal.com/shabbat?cfg=json&latitude=${lat}&longitude=${lng}&tzid=America/Chicago&M=on`
-        );
-        const dafData = await dafResponse.json();
-        const dafItem = dafData.items?.find(item => item.category === 'dafyomi');
-        setDafYomi(dafItem?.title?.replace('Daf Yomi: ', '') || 'Loading...');
-
-      } catch (error) {
-        console.log('Error fetching zmanim:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchZmanim();
-  }, []);
-
-  const formatTime = (isoTime) => {
-    if (!isoTime) return '--:--';
-    const date = new Date(isoTime);
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: false,
-    });
-  };
+  const { data: todayZmanim, isLoading: loading } = useQuery({
+    queryKey: ['zmanim', today],
+    queryFn: async () => {
+      const result = await base44.entities.Zmanim.filter({ date: today });
+      return result[0] || null;
+    },
+  });
 
   const displayZmanim = selectedZmanim?.length > 0 
     ? defaultZmanim.filter(z => selectedZmanim.includes(z.key))
@@ -92,7 +39,7 @@ export default function ZmanimDisplay({ selectedZmanim }) {
       {/* Hebrew Date & Daf Yomi */}
       <div className="flex items-center justify-between text-sm">
         <div>
-          <p className="text-slate-700 font-medium">{hebrewDate}</p>
+          <p className="text-slate-700 font-medium">{todayZmanim?.hebrew_date || '...'}</p>
           <p className="text-xs text-slate-500">
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
@@ -101,10 +48,10 @@ export default function ZmanimDisplay({ selectedZmanim }) {
             })}
           </p>
         </div>
-        {dafYomi && (
+        {todayZmanim?.daf_yomi && (
           <div className="text-right">
             <p className="text-xs text-slate-500">Daf Yomi</p>
-            <p className="text-sm font-semibold text-slate-700">{dafYomi}</p>
+            <p className="text-sm font-semibold text-slate-700">{todayZmanim.daf_yomi}</p>
           </div>
         )}
       </div>
@@ -121,7 +68,7 @@ export default function ZmanimDisplay({ selectedZmanim }) {
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {displayZmanim.map(({ key, label, icon: Icon }) => {
-              const time = zmanimTimes[key];
+              const time = todayZmanim?.[key] || '--:--';
               return (
                 <motion.div 
                   key={key}
@@ -130,7 +77,7 @@ export default function ZmanimDisplay({ selectedZmanim }) {
                 >
                   <Icon className="w-6 h-6 text-blue-600" />
                   <p className="text-xs text-slate-500 text-center">{label}</p>
-                  <p className="font-bold text-lg text-slate-800">{time || '--:--'}</p>
+                  <p className="font-bold text-lg text-slate-800">{time}</p>
                 </motion.div>
               );
             })}
