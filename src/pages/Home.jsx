@@ -76,7 +76,7 @@ export default function Home() {
                 >
                   <button
                     onClick={() => toggleNews(item.id)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
+                    className="w-full p-4 flex items-center justify-between bg-blue-100 hover:bg-blue-200 transition-colors"
                   >
                     <h3 className="font-bold text-[#1e3a5f] text-sm text-left line-clamp-1 flex-1">
                       {item.title || item.content}
