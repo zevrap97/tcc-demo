@@ -56,58 +56,53 @@ export default function Home() {
           <ZmanimDisplay selectedZmanim={userSettings?.display_zmanim} />
         </motion.div>
 
-        {/* News from Chicago Center */}
+        {/* Community News */}
         {news.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-2"
+            className="space-y-3"
           >
-            <h2 className="text-sm font-semibold text-slate-700 px-1">News from Chicago Center</h2>
-            <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-slate-700 px-1">Community News</h2>
+            <div className="space-y-3">
               {news.map((item, index) => (
                 <motion.div
                   key={item.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.15 + index * 0.05 }}
-                  className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl overflow-hidden border border-blue-200/50"
+                  className="bg-white rounded-xl overflow-hidden border-2 border-[#1e3a5f]"
                 >
                   <button
                     onClick={() => toggleNews(item.id)}
-                    className="w-full p-3 flex items-center justify-between hover:bg-blue-100/50 transition-colors"
+                    className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
                   >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {item.image_url && (
-                        <img 
-                          src={item.image_url} 
-                          alt="" 
-                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                        />
-                      )}
-                      <p className="font-semibold text-blue-900 text-xs text-left line-clamp-2">
-                        {item.title || item.content}
-                      </p>
-                    </div>
+                    <h3 className="font-bold text-[#1e3a5f] text-sm text-left line-clamp-1 flex-1">
+                      {item.title || item.content}
+                    </h3>
                     <ChevronDown 
-                      className={`w-4 h-4 text-blue-700 flex-shrink-0 transition-transform ${
+                      className={`w-5 h-5 text-[#1e3a5f] flex-shrink-0 ml-2 transition-transform ${
                         expandedNews[item.id] ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
-                  
+
                   {expandedNews[item.id] && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="px-3 pb-3 space-y-2"
+                      className="px-4 pb-4 border-t-2 border-[#1e3a5f] space-y-3"
                     >
-                      {item.title && (
-                        <h3 className="font-bold text-blue-900 text-sm">{item.title}</h3>
+                      {item.image_url && (
+                        <img 
+                          src={item.image_url} 
+                          alt="" 
+                          className="w-full rounded-lg object-cover"
+                        />
                       )}
-                      <p className="text-xs text-blue-800 leading-relaxed">{item.content}</p>
+                      <p className="text-sm text-slate-700 leading-relaxed">{item.content}</p>
                     </motion.div>
                   )}
                 </motion.div>
