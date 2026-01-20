@@ -22,8 +22,8 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-50 safe-area-bottom">
-      <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t-2 border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] z-50 safe-area-bottom">
+      <div className="flex justify-around items-center h-20 max-w-lg mx-auto px-2">
         {navItems.map(({ icon: Icon, label, page }) => (
           <Link
             key={page}
