@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 const navItems = [
   { icon: Home, label: 'Home', page: 'Home' },
   { icon: UtensilsCrossed, label: 'Food', page: 'Restaurants' },
-  { icon: Clock, label: 'Daven', page: 'Daven' },
   { icon: Heart, label: 'Favorites', page: 'Favorites' },
+  { icon: Clock, label: 'Daven', page: 'Daven' },
   { icon: BookUser, label: 'Directory', page: 'Directory' },
 ];
 
