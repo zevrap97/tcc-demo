@@ -7,7 +7,7 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Pages that should hide navigation
-  const fullScreenPages = ['SynagogueDetail', 'Settings', 'Favorites', 'Contact', 'SubmitBusiness'];
+  const fullScreenPages = ['SynagogueDetail', 'Settings', 'Contact', 'SubmitBusiness'];
   const hideNav = fullScreenPages.includes(currentPageName);
 
   return (
