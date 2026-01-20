@@ -140,13 +140,6 @@ export default function Minyan() {
           if (distance > 5) return false;
         }
 
-        if (quickFilter === 'soon') {
-          const [hours, minutes] = minyan.time.split(':').map(Number);
-          const minyanMinutes = hours * 60 + minutes;
-          const diff = minyanMinutes - currentMinutes;
-          if (diff < 0 || diff > 30) return false;
-        }
-
         if (quickFilter === 'favorites' && !isFavorite(minyan.synagogue_id)) {
           return false;
         }
@@ -180,7 +173,6 @@ export default function Minyan() {
 
   const quickFilters = [
     { key: 'all', label: 'All', icon: Filter },
-    { key: 'soon', label: 'Soon', icon: Clock },
     { key: 'within10', label: '10m Drive', icon: MapPin },
     { key: 'favorites', label: 'Favorites', icon: Heart },
   ];
