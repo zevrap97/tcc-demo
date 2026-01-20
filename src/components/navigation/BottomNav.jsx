@@ -45,7 +45,8 @@ export default function BottomNav() {
                 />
               )}
               <Icon 
-                className={`w-5 h-5 ${isActive(page) ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} 
+                className={`${label === 'Favorites' ? 'w-7 h-7' : 'w-5 h-5'} ${isActive(page) ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} 
+                style={label === 'Favorites' ? { color: '#1e3a5f' } : {}}
               />
               <span className={`text-[10px] mt-1 font-medium ${
                 isActive(page) ? 'text-blue-600' : 'text-slate-500'
