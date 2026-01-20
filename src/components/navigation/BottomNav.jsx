@@ -44,11 +44,14 @@ export default function BottomNav() {
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
-              <div className={label === 'Favorites' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-3 shadow-lg' : ''}>
+              <div className={label === 'Favorites' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-3 shadow-lg flex flex-col items-center gap-1' : ''}>
                 <Icon 
-                  className={`${label === 'Favorites' ? 'w-8 h-8' : 'w-5 h-5'} ${isActive(page) ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} 
+                  className={`${label === 'Favorites' ? 'w-7 h-7' : 'w-5 h-5'} ${isActive(page) ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} 
                   style={label === 'Favorites' ? { color: 'white' } : {}}
                 />
+                {label === 'Favorites' && (
+                  <span className="text-[9px] font-semibold text-white">Favorites</span>
+                )}
               </div>
               <span className={`text-[10px] mt-1 font-medium ${
                 isActive(page) ? 'text-blue-600' : 'text-slate-500'
