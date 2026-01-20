@@ -104,6 +104,68 @@ export default function AnalyticsDashboard() {
   const totalStoryViews = stories.reduce((sum, s) => sum + (s.view_count || 0), 0);
   const avgStoryViews = stories.length > 0 ? Math.round(totalStoryViews / stories.length) : 0;
 
+  // Restaurant type distribution
+  const restaurantTypes = [
+    { name: 'Meat', value: restaurants.filter(r => r.type === 'meat').length, color: '#ef4444' },
+    { name: 'Dairy', value: restaurants.filter(r => r.type === 'dairy').length, color: '#3b82f6' },
+    { name: 'Pareve', value: restaurants.filter(r => r.type === 'pareve').length, color: '#10b981' },
+  ];
+
+  // Synagogue nusach distribution
+  const nusachData = [
+    { nusach: 'Ashkenaz', count: synagogues.filter(s => s.nusach === 'Ashkenaz').length },
+    { nusach: 'Sefard', count: synagogues.filter(s => s.nusach === 'Sefard').length },
+    { nusach: 'Edot HaMizrach', count: synagogues.filter(s => s.nusach === 'Edot HaMizrach').length },
+    { nusach: 'Chabad', count: synagogues.filter(s => s.nusach === 'Chabad').length },
+    { nusach: 'Other', count: synagogues.filter(s => s.nusach === 'Other').length },
+  ].filter(n => n.count > 0);
+
+  // Minyan times distribution
+  const minyanByPrayer = [
+    { type: 'Shacharit', count: minyans.filter(m => m.prayer_type === 'Shacharit').length },
+    { type: 'Mincha', count: minyans.filter(m => m.prayer_type === 'Mincha').length },
+    { type: 'Maariv', count: minyans.filter(m => m.prayer_type === 'Maariv').length },
+    { type: 'Selichot', count: minyans.filter(m => m.prayer_type === 'Selichot').length },
+  ].filter(m => m.count > 0);
+
+  // Contact profession distribution
+  const professionData = contacts.reduce((acc, contact) => {
+    const category = contact.profession_category || 'Other';
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const topProfessions = Object.entries(professionData)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 8)
+    .map(([category, count]) => ({ category, count }));
+
+  // Activity overview - radar chart data
+  const activityData = [
+    { category: 'Restaurants', count: restaurants.length, fullMark: Math.max(restaurants.length, synagogues.length, contacts.length, minyans.length, stories.length) },
+    { category: 'Synagogues', count: synagogues.length, fullMark: Math.max(restaurants.length, synagogues.length, contacts.length, minyans.length, stories.length) },
+    { category: 'Contacts', count: contacts.length, fullMark: Math.max(restaurants.length, synagogues.length, contacts.length, minyans.length, stories.length) },
+    { category: 'Minyans', count: minyans.length, fullMark: Math.max(restaurants.length, synagogues.length, contacts.length, minyans.length, stories.length) },
+    { category: 'Stories', count: stories.length, fullMark: Math.max(restaurants.length, synagogues.length, contacts.length, minyans.length, stories.length) },
+  ];
+
+  // News activity
+  const activeNews = news.filter(n => n.is_active).length;
+
+  // Price range distribution for restaurants
+  const priceRangeData = [
+    { range: '$', count: restaurants.filter(r => r.price_range === '$').length },
+    { range: '$$', count: restaurants.filter(r => r.price_range === '$$').length },
+    { range: '$$$', count: restaurants.filter(r => r.price_range === '$$$').length },
+    { range: '$$$$', count: restaurants.filter(r => r.price_range === '$$$$').length },
+  ].filter(p => p.count > 0);
+
+  // User role distribution
+  const userRoles = [
+    { name: 'Admins', value: users.filter(u => u.role === 'admin').length, color: '#8b5cf6' },
+    { name: 'Users', value: users.filter(u => u.role === 'user').length, color: '#3b82f6' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
