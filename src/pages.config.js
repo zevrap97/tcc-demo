@@ -1,5 +1,6 @@
 import Admin from './pages/Admin';
 import Contact from './pages/Contact';
+import Daven from './pages/Daven';
 import Directory from './pages/Directory';
 import Favorites from './pages/Favorites';
 import Home from './pages/Home';
@@ -9,13 +10,13 @@ import Settings from './pages/Settings';
 import SubmitBusiness from './pages/SubmitBusiness';
 import SynagogueDetail from './pages/SynagogueDetail';
 import Synagogues from './pages/Synagogues';
-import Daven from './pages/Daven';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
     "Contact": Contact,
+    "Daven": Daven,
     "Directory": Directory,
     "Favorites": Favorites,
     "Home": Home,
@@ -25,7 +26,6 @@ export const PAGES = {
     "SubmitBusiness": SubmitBusiness,
     "SynagogueDetail": SynagogueDetail,
     "Synagogues": Synagogues,
-    "Daven": Daven,
 }
 
 export const pagesConfig = {
