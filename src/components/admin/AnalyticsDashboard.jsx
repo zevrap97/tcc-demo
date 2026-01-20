@@ -31,6 +31,26 @@ export default function AnalyticsDashboard() {
     queryFn: () => base44.entities.User.list(),
   });
 
+  const { data: minyans = [] } = useQuery({
+    queryKey: ['minyans'],
+    queryFn: () => base44.entities.Minyan.list(),
+  });
+
+  const { data: contacts = [] } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: () => base44.entities.Contact.list(),
+  });
+
+  const { data: news = [] } = useQuery({
+    queryKey: ['news'],
+    queryFn: () => base44.entities.News.list(),
+  });
+
+  const { data: zmanim = [] } = useQuery({
+    queryKey: ['zmanim'],
+    queryFn: () => base44.entities.Zmanim.list(),
+  });
+
   // Story performance data
   const topStories = [...stories]
     .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
