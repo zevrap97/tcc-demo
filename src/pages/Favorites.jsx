@@ -4,8 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Heart, UtensilsCrossed, Building2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Heart, UtensilsCrossed, Building2 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import RestaurantCard from '@/components/restaurants/RestaurantCard';
+import SynagogueCard from '@/components/synagogue/SynagogueCard';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function Favorites() {
   const queryClient = useQueryClient();
@@ -30,6 +33,23 @@ export default function Favorites() {
     enabled: !!user,
   });
 
+  const { data: restaurants = [] } = useQuery({
+    queryKey: ['restaurants'],
+    queryFn: () => base44.entities.Restaurant.list(),
+  });
+
+  const { data: synagogues = [] } = useQuery({
+    queryKey: ['synagogues'],
+    queryFn: () => base44.entities.Synagogue.list(),
+  });
+
+  const { data: minyans = [] } = useQuery({
+    queryKey: ['allMinyans'],
+    queryFn: () => base44.entities.Minyan.filter({ is_active: true }),
+  });
+
+  const [calendarDialog, setCalendarDialog] = React.useState({ open: false, synagogue: null });
+
   const deleteMutation = useMutation({
     mutationFn: async (favoriteId) => {
       await base44.entities.Favorite.delete(favoriteId);
@@ -40,8 +60,81 @@ export default function Favorites() {
     },
   });
 
-  const restaurantFavorites = favorites.filter(f => f.item_type === 'restaurant');
-  const synagogueFavorites = favorites.filter(f => f.item_type === 'synagogue');
+  const toggleFavorite = (item, itemType) => {
+    const existing = favorites.find(f => f.item_id === item.id);
+    if (existing) {
+      deleteMutation.mutate(existing.id);
+    }
+  };
+
+  const isFavorite = (id) => favorites.some(f => f.item_id === id);
+
+  const getNextPrayers = (synagogueId) => {
+    const synagogueMinyans = minyans.filter(m => m.synagogue_id === synagogueId);
+    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    return synagogueMinyans
+      .filter(m => m.day_of_week?.includes(currentDay))
+      .filter(m => {
+        const [hours, minutes] = m.time.split(':').map(Number);
+        return hours * 60 + minutes > currentMinutes;
+      })
+      .sort((a, b) => {
+        const [aH, aM] = a.time.split(':').map(Number);
+        const [bH, bM] = b.time.split(':').map(Number);
+        return (aH * 60 + aM) - (bH * 60 + bM);
+      })
+      .slice(0, 2)
+      .map(m => ({
+        type: m.prayer_type,
+        time: formatTime(m.time),
+      }));
+  };
+
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
+  const addPrayerToCalendar = (prayer, synagogue) => {
+    const [hours, minutes] = prayer.time.includes('PM') || prayer.time.includes('AM')
+      ? convertTo24Hour(prayer.time)
+      : prayer.time.split(':').map(Number);
+    
+    const today = new Date();
+    today.setHours(hours, minutes, 0, 0);
+    
+    const endTime = new Date(today.getTime() + 30 * 60000);
+    
+    const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    
+    const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(prayer.type + ' at ' + synagogue.name)}&dates=${formatDate(today)}/${formatDate(endTime)}&location=${encodeURIComponent(synagogue.address || '')}`;
+    
+    window.open(calendarUrl, '_blank');
+    setCalendarDialog({ open: false, synagogue: null });
+  };
+
+  const convertTo24Hour = (time12h) => {
+    const [time, modifier] = time12h.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (modifier === 'PM' && hours !== 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+    return [hours, minutes];
+  };
+
+  const restaurantFavorites = favorites
+    .filter(f => f.item_type === 'restaurant')
+    .map(f => restaurants.find(r => r.id === f.item_id))
+    .filter(Boolean);
+    
+  const synagogueFavorites = favorites
+    .filter(f => f.item_type === 'synagogue')
+    .map(f => synagogues.find(s => s.id === f.item_id))
+    .filter(Boolean);
 
   if (!user) {
     return (
@@ -119,26 +212,13 @@ export default function Favorites() {
                 </Link>
               </div>
             ) : (
-              restaurantFavorites.map((favorite) => (
-                <motion.div
-                  key={favorite.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl p-4 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                      <UtensilsCrossed className="w-5 h-5 text-orange-500" />
-                    </div>
-                    <p className="font-medium text-slate-800">{favorite.item_name}</p>
-                  </div>
-                  <button
-                    onClick={() => deleteMutation.mutate(favorite.id)}
-                    className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </motion.div>
+              restaurantFavorites.map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.id}
+                  restaurant={restaurant}
+                  isFavorite={true}
+                  onToggleFavorite={() => toggleFavorite(restaurant, 'restaurant')}
+                />
               ))
             )}
           </TabsContent>
@@ -162,31 +242,44 @@ export default function Favorites() {
                 </Link>
               </div>
             ) : (
-              synagogueFavorites.map((favorite) => (
-                <motion.div
-                  key={favorite.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl p-4 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-purple-500" />
-                    </div>
-                    <p className="font-medium text-slate-800">{favorite.item_name}</p>
-                  </div>
-                  <button
-                    onClick={() => deleteMutation.mutate(favorite.id)}
-                    className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </motion.div>
+              synagogueFavorites.map((synagogue) => (
+                <SynagogueCard
+                  key={synagogue.id}
+                  synagogue={synagogue}
+                  nextPrayers={getNextPrayers(synagogue.id)}
+                  isFavorite={true}
+                  onToggleFavorite={() => toggleFavorite(synagogue, 'synagogue')}
+                  onAddToCalendar={() => setCalendarDialog({ open: true, synagogue })}
+                />
               ))
             )}
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Calendar Selection Dialog */}
+      <Dialog open={calendarDialog.open} onOpenChange={(open) => setCalendarDialog({ ...calendarDialog, open })}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Add to Calendar</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            {calendarDialog.synagogue && getNextPrayers(calendarDialog.synagogue.id).map((prayer, idx) => (
+              <button
+                key={idx}
+                onClick={() => addPrayerToCalendar(prayer, calendarDialog.synagogue)}
+                className="w-full p-4 rounded-xl bg-slate-50 hover:bg-slate-100 text-left transition-colors"
+              >
+                <p className="font-medium text-slate-800">{prayer.type}</p>
+                <p className="text-sm text-slate-500">{prayer.time}</p>
+              </button>
+            ))}
+            {calendarDialog.synagogue && getNextPrayers(calendarDialog.synagogue.id).length === 0 && (
+              <p className="text-center text-slate-500 py-4">No upcoming prayers today</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
