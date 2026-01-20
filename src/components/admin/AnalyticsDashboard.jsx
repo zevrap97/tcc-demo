@@ -225,6 +225,62 @@ export default function AnalyticsDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                <UtensilsCrossed className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Restaurants</p>
+                <p className="text-xl font-bold text-slate-800">{restaurants.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Synagogues</p>
+                <p className="text-xl font-bold text-slate-800">{synagogues.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-teal-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Minyans</p>
+                <p className="text-xl font-bold text-slate-800">{minyans.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center">
+                <BookUser className="w-5 h-5 text-cyan-600" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Directory Contacts</p>
+                <p className="text-xl font-bold text-slate-800">{contacts.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Top Stories */}
