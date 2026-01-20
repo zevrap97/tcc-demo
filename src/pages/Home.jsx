@@ -64,7 +64,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="space-y-3"
           >
-            <h2 className="text-sm font-semibold text-slate-700 px-1">Community News</h2>
+            <h2 className="text-sm font-semibold text-white bg-[#3b5f8f] px-4 py-2 rounded-lg">Community News</h2>
             <div className="space-y-3">
               {news.map((item, index) => (
                 <motion.div
