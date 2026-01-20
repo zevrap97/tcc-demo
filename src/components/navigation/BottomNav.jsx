@@ -53,11 +53,13 @@ export default function BottomNav() {
                   <span className="text-[9px] font-semibold text-white">Favorites</span>
                 )}
               </div>
-              <span className={`text-[10px] mt-1 font-medium ${
-                isActive(page) ? 'text-blue-600' : 'text-slate-500'
-              }`}>
-                {label}
-              </span>
+              {label !== 'Favorites' && (
+                <span className={`text-[10px] mt-1 font-medium ${
+                  isActive(page) ? 'text-blue-600' : 'text-slate-500'
+                }`}>
+                  {label}
+                </span>
+              )}
             </motion.div>
           </Link>
         ))}
