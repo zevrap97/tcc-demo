@@ -57,7 +57,7 @@ export default function TopBar({ onMenuClick }) {
                 setShowStory(true);
               }
             }}
-            className="relative w-16 h-16 -m-2"
+            className="relative w-16 h-16 -m-2 mt-1"
           >
             <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 p-0.5 ${
               hasNewStory && activeStories.length > 0 ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''
