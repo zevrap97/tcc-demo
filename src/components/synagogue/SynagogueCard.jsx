@@ -127,27 +127,26 @@ export default function SynagogueCard({
                   <span className="text-[10px] font-medium">Details</span>
                 </Link>
 
-                {synagogue.donation_url && (
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => window.open(synagogue.donation_url, '_blank')}
-                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-green-50 text-green-600"
-                  >
-                    <DollarSign className="w-5 h-5" />
-                    <span className="text-[10px] font-medium">Donate</span>
-                  </motion.button>
-                )}
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={openGoogleMaps}
+                  className="flex flex-col items-center gap-1 py-3 rounded-xl bg-blue-600 text-white"
+                >
+                  <Navigation className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Navigate</span>
+                </motion.button>
               </div>
 
-              {/* Navigate Button */}
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                onClick={openGoogleMaps}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white font-medium"
-              >
-                <Navigation className="w-4 h-4" />
-                Navigate to Synagogue
-              </motion.button>
+              {synagogue.donation_url && (
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => window.open(synagogue.donation_url, '_blank')}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-600 text-white font-medium"
+                >
+                  <DollarSign className="w-4 h-4" />
+                  Donate to Synagogue
+                </motion.button>
+              )}
             </div>
           </motion.div>
         )}
