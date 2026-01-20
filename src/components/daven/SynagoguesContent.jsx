@@ -171,7 +171,35 @@ export default function SynagoguesContent() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Search synagogues..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-1">
+          {quickFilters.map(({ key, label, icon: Icon }) => (
+            <motion.button
+              key={key}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setQuickFilter(key)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                quickFilter === key
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-slate-600 border border-slate-200'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </motion.button>
+          ))}
+        </div>
         <div className="flex items-center gap-2">
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -188,35 +216,6 @@ export default function SynagoguesContent() {
             <Map className="w-5 h-5" />
           </motion.button>
         </div>
-      </div>
-
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search synagogues..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
-
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-        {quickFilters.map(({ key, label, icon: Icon }) => (
-          <motion.button
-            key={key}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setQuickFilter(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-              quickFilter === key
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-slate-600 border border-slate-200'
-            }`}
-          >
-            <Icon className="w-4 h-4" />
-            {label}
-          </motion.button>
-        ))}
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
