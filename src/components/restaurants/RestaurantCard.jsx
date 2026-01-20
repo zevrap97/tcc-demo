@@ -68,18 +68,18 @@ export default function RestaurantCard({ restaurant, isFavorite, onToggleFavorit
             </span>
           </div>
 
-          {/* Open Status and Hours */}
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`flex items-center gap-1 text-xs font-medium ${
+          {/* Hours and Open Status */}
+          <div className="mt-1">
+            <p className="text-xs text-slate-500">
+              {formatHours(restaurant.opening_hours)}
+            </p>
+            <span className={`flex items-center gap-1 text-xs font-medium mt-0.5 ${
               restaurant.is_open_now ? 'text-green-600' : 'text-red-500'
             }`}>
               <span className={`w-1.5 h-1.5 rounded-full ${
                 restaurant.is_open_now ? 'bg-green-500' : 'bg-red-500'
               }`} />
               {restaurant.is_open_now ? 'Open' : 'Closed'}
-            </span>
-            <span className="text-xs text-slate-400">
-              • {formatHours(restaurant.opening_hours)}
             </span>
           </div>
         </div>
