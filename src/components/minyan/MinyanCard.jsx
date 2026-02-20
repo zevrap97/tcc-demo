@@ -144,7 +144,10 @@ export default function MinyanCard({ minyan, isFavorite, onToggleFavorite, onAdd
 
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => onAddToCalendar(minyan)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddToCalendar();
+                  }}
                   className="flex flex-col items-center gap-1 py-3 rounded-xl bg-purple-50 text-purple-600"
                 >
                   <CalendarPlus className="w-5 h-5" />
